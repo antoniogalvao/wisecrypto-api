@@ -1,11 +1,15 @@
-import { User } from './entities/user.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { getRepository, Repository } from 'typeorm';
 import { instanceToPlain } from 'class-transformer';
-import { hash } from 'bcryptjs';
+
+import { hash, compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
+
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { SigninUserDto } from './dto/signin-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -49,16 +53,46 @@ export class UsersService {
     return instanceToPlain(users);
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     const user = this.usersRepository.findOne(id);
     return instanceToPlain(user);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.usersRepository.delete(id);
+  }
+
+  async authenticate(signinUserDto: SigninUserDto) {
+    const { email, password } = signinUserDto;
+    const user = await this.usersRepository.findOne({ email });
+
+    if (!user) {
+      throw new HttpException(
+        'Email/Password incorrect',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const passwordMatch = await compare(password, user.password);
+
+    console.log(passwordMatch);
+
+    if (!passwordMatch) {
+      throw new HttpException(
+        'Email/Password incorrect',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const token = sign({ email }, '26ae5c0b365fe3a63422878093d80779', {
+      subject: user.id,
+      expiresIn: '1d',
+    });
+
+    return token;
   }
 }
