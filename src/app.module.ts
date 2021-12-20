@@ -6,6 +6,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -18,6 +19,13 @@ import { UsersModule } from './users/users.module';
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASS,
         },
+      },
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASS,
       },
     }),
     TypeOrmModule.forRoot(),
