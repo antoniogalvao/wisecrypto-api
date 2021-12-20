@@ -79,8 +79,6 @@ export class UsersService {
 
     const passwordMatch = await compare(password, user.password);
 
-    console.log(passwordMatch);
-
     if (!passwordMatch) {
       throw new HttpException(
         'Email/Password incorrect',
@@ -88,7 +86,7 @@ export class UsersService {
       );
     }
 
-    const token = sign({ email }, '26ae5c0b365fe3a63422878093d80779', {
+    const token = sign({ email }, process.env.JWT_SECRET, {
       subject: user.id,
       expiresIn: '1d',
     });
