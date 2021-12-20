@@ -11,10 +11,14 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SigninUserDto } from './dto/signin-user.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly mailerService: MailerService,
+  ) {}
 
   @Post('signin')
   async signin(@Body() signinUserDto: SigninUserDto) {
@@ -23,8 +27,17 @@ export class UsersController {
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const user = await this.usersService.create(createUserDto);
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      from: 'Wisecrypto <noreply@wisecrypto.com>',
+      subject: `Welcome!`,
+      text: 'Hello, ${user.firstName}, your registration has been successful',
+    });
+
+    return { user };
   }
 
   @Get()
