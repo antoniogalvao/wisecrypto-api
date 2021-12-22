@@ -1,3 +1,5 @@
+import { CreateWalletDto } from './dto/create-wallet.dto';
+import { WalletsService } from './wallets.service';
 import {
   Controller,
   Get,
@@ -17,6 +19,7 @@ import { SendMailProducerService } from '../jobs/sendMail-producer.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
+    private readonly walletsService: WalletsService,
     private sendMailService: SendMailProducerService,
   ) {}
 
@@ -24,6 +27,16 @@ export class UsersController {
   async signin(@Body() signinUserDto: SigninUserDto) {
     const token = await this.usersService.authenticate(signinUserDto);
     return { token: token };
+  }
+
+  @Post('wallets')
+  async createWallet(@Body() createWalletDto: CreateWalletDto) {
+    return await this.walletsService.create(createWalletDto);
+  }
+
+  @Get('wallets')
+  async findAllWallets() {
+    return await this.walletsService.findAll();
   }
 
   @Post()
@@ -46,12 +59,12 @@ export class UsersController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return await this.usersService.update(id, updateUserDto);
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.usersService.remove(id);
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 }
