@@ -14,12 +14,12 @@ export class CurrenciesController {
   }
 
   @Get()
-  findAll() {
-    return this.currenciesService.findAll();
+  async findAll() {
+    return await this.currenciesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.currenciesService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.currenciesService.findOne(id);
   }
 }

@@ -48,13 +48,13 @@ export class UsersService {
     return instanceToPlain(user);
   }
 
-  findAll() {
-    const users = this.usersRepository.find();
+  async findAll() {
+    const users = await this.usersRepository.find();
     return instanceToPlain(users);
   }
 
-  findOne(id: string) {
-    const user = this.usersRepository.findOne(id);
+  async findOne(id: string) {
+    const user = await this.usersRepository.findOne(id);
     return instanceToPlain(user);
   }
 

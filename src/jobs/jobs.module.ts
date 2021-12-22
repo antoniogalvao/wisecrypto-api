@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { SendMailProducerService } from 'src/jobs/sendMail-producer.service';
-import { SendMailConsumer } from 'src/jobs/sendMail-consumer';
+import { SendMailProducerService } from './sendMail-producer.service';
+import { SendMailConsumer } from './sendMail-consumer';
 import { BullModule } from '@nestjs/bull';
 
 import { InjectQueue } from '@nestjs/bull';

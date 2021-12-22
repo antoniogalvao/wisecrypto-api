@@ -1,16 +1,20 @@
+import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import { CurrenciesModule } from './../src/currencies/currencies.module';
+import { CurrenciesService } from './../src/currencies/currencies.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppModule } from './../src/app.module';
-import { UsersModule } from './../src/users/users.module';
 
-describe('AppController (e2e)', () => {
+describe('Currencies', () => {
   let app: INestApplication;
+  const currenciesService = {
+    findAll: () => ['test'],
+  };
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
+        CurrenciesModule,
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: 'localhost',
@@ -21,20 +25,21 @@ describe('AppController (e2e)', () => {
           entities: ['./**/*.entity.ts'],
           synchronize: false,
         }),
-        AppModule,
-        UsersModule,
       ],
-    }).compile();
+    })
+      .overrideProvider(CurrenciesService)
+      .useValue(currenciesService)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it(`/GET currencies`, () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/currencies')
       .expect(200)
-      .expect('Hello World!');
+      .expect(currenciesService.findAll());
   });
 
   afterAll(async () => {
