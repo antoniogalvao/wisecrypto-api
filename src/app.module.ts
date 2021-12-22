@@ -7,6 +7,7 @@ import { BullModule } from '@nestjs/bull';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { CurrenciesModule } from './currencies/currencies.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UsersModule } from './users/users.module';
     }),
     TypeOrmModule.forRoot(),
     UsersModule,
+    CurrenciesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
