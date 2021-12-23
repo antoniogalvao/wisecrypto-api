@@ -1,5 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { getRepository, Repository } from 'typeorm';
+import { createQueryBuilder, getRepository, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateWalletDto } from './dto/create-wallet.dto';
@@ -19,8 +19,8 @@ export class WalletsService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(createWalletDto: CreateWalletDto) {
-    const { user_id, currency_id, amount } = createWalletDto;
+  async create(user_id, createWalletDto: CreateWalletDto) {
+    const { currency_id, amount } = createWalletDto;
 
     const user = await this.usersRepository.findOne(user_id);
 
@@ -56,6 +56,21 @@ export class WalletsService {
     const wallet = await this.walletsRepository.save(newWallet);
 
     return wallet;
+  }
+
+  async findAllByUserId(user_id: string) {
+    const walllets = await getRepository(Wallet)
+      .createQueryBuilder('wallets')
+      .select([
+        'wallets.id',
+        'wallets.amount',
+        'currencies.code',
+        'currencies.name',
+      ])
+      .where('wallets.user_id = :user_id', { user_id })
+      .innerJoin('wallets.currency', 'currencies')
+      .getMany();
+    return walllets;
   }
 
   findAll() {

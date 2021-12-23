@@ -1,14 +1,5 @@
-import { CreateWalletDto } from './dto/create-wallet.dto';
 import { WalletsService } from './wallets.service';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -18,16 +9,6 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly walletsService: WalletsService,
   ) {}
-
-  @Post('wallets')
-  async createWallet(@Body() createWalletDto: CreateWalletDto) {
-    return await this.walletsService.create(createWalletDto);
-  }
-
-  @Get('wallets')
-  async findAllWallets() {
-    return await this.walletsService.findAll();
-  }
 
   @Get()
   async findAll() {
