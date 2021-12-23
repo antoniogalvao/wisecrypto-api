@@ -1,7 +1,5 @@
-import { Currency } from './entities/currency.entity';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
-import { getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CurrenciesRepository } from './repositories/currencies.repository';
 
@@ -15,10 +13,9 @@ export class CurrenciesService {
   async create(createCurrencyDto: CreateCurrencyDto) {
     const { code, name } = createCurrencyDto;
 
-    const qb = getRepository(Currency)
-      .createQueryBuilder('currencies')
-      .where('currencies.code = :code', { code });
-    const currencyAlreadyExists = await qb.getOne();
+    const currencyAlreadyExists = await this.currenciesRepository.getOneByCode(
+      code,
+    );
 
     if (currencyAlreadyExists) {
       const errors = { code: 'Must be unique' };

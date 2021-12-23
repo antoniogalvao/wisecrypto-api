@@ -1,10 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateWalletDto } from './dto/create-wallet.dto';
 
-import { Wallet } from './entities/wallet.entity';
 import { WalletsRepository } from './repositories/wallets.repository';
 import { CurrenciesRepository } from 'src/currencies/repositories/currencies.repository';
 import { UsersRepository } from './repositories/users.repository';
@@ -35,12 +33,11 @@ export class WalletsService {
       throw new HttpException('Invalid currency', HttpStatus.BAD_REQUEST);
     }
 
-    const qb = getRepository(Wallet)
-      .createQueryBuilder('wallets')
-      .where('wallets.user_id = :user_id', { user_id })
-      .andWhere('wallets.currency_id = :currency_id', { currency_id });
-
-    const walletAlreadyExists = await qb.getOne();
+    const walletAlreadyExists =
+      await this.walletsRepository.getByUserIdAndCurrencyId(
+        user_id,
+        currency_id,
+      );
 
     if (walletAlreadyExists) {
       throw new HttpException(
@@ -60,18 +57,10 @@ export class WalletsService {
   }
 
   async findAllByUserId(user_id: string) {
-    const walllets = await getRepository(Wallet)
-      .createQueryBuilder('wallets')
-      .select([
-        'wallets.id',
-        'wallets.amount',
-        'currencies.code',
-        'currencies.name',
-      ])
-      .where('wallets.user_id = :user_id', { user_id })
-      .innerJoin('wallets.currency', 'currencies')
-      .getMany();
-    return walllets;
+    const wallets = await this.walletsRepository.getByUserIdJoinCurrencies(
+      user_id,
+    );
+    return wallets;
   }
 
   findAll() {
