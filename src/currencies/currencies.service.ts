@@ -1,14 +1,15 @@
 import { Currency } from './entities/currency.entity';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
-import { getRepository, Repository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CurrenciesRepository } from './repositories/currencies.repository';
 
 @Injectable()
 export class CurrenciesService {
   constructor(
-    @InjectRepository(Currency)
-    private currenciesRepository: Repository<Currency>,
+    @InjectRepository(CurrenciesRepository)
+    private currenciesRepository: CurrenciesRepository,
   ) {}
 
   async create(createCurrencyDto: CreateCurrencyDto) {

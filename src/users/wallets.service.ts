@@ -1,25 +1,26 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { createQueryBuilder, getRepository, Repository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateWalletDto } from './dto/create-wallet.dto';
 
 import { Wallet } from './entities/wallet.entity';
-import { User } from './entities/user.entity';
-import { Currency } from '../currencies/entities/currency.entity';
+import { WalletsRepository } from './repositories/wallets.repository';
+import { CurrenciesRepository } from 'src/currencies/repositories/currencies.repository';
+import { UsersRepository } from './repositories/users.repository';
 
 @Injectable()
 export class WalletsService {
   constructor(
-    @InjectRepository(Wallet)
-    private walletsRepository: Repository<Wallet>,
-    @InjectRepository(Currency)
-    private currenciesRepository: Repository<Currency>,
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(WalletsRepository)
+    private walletsRepository: WalletsRepository,
+    @InjectRepository(CurrenciesRepository)
+    private currenciesRepository: CurrenciesRepository,
+    @InjectRepository(UsersRepository)
+    private usersRepository: UsersRepository,
   ) {}
 
-  async create(user_id, createWalletDto: CreateWalletDto) {
+  async create(user_id: string, createWalletDto: CreateWalletDto) {
     const { currency_id, amount } = createWalletDto;
 
     const user = await this.usersRepository.findOne(user_id);
