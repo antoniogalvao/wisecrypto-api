@@ -1,7 +1,7 @@
 import { CredentialsDto } from './dto/credentials.dto';
-import { sign } from 'jsonwebtoken';
 import { instanceToPlain } from 'class-transformer';
 import { hash, compare } from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 import { User } from './../users/entities/user.entity';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 export class AuthService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   async signin(credentialsDto: CredentialsDto) {
@@ -34,12 +35,11 @@ export class AuthService {
       );
     }
 
-    const token = sign({ email }, process.env.JWT_SECRET, {
-      subject: user.id,
-      expiresIn: '1d',
-    });
+    const jwtPayload = {
+      id: user.id,
+    };
 
-    return token;
+    return this.jwtService.sign(jwtPayload);
   }
 
   async signup(createUserDto: CreateUserDto) {
