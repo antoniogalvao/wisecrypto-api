@@ -1,10 +1,13 @@
-import { Controller, Body, Post } from '@nestjs/common';
+import { Controller, Body, Post, Get, UseGuards } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { SendMailProducerService } from 'src/jobs/sendMail-producer.service';
 
 import { CredentialsDto } from './dto/credentials.dto';
 import { CreateUserDto } from './../users/dto/create-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/users/entities/user.entity';
+import { GetUser } from './get-user-decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -26,5 +29,11 @@ export class AuthController {
     this.sendMailService.sendMail(createUserDto);
 
     return { user };
+  }
+
+  @Get('profile')
+  @UseGuards(AuthGuard())
+  profile(@GetUser() user: User): User {
+    return user;
   }
 }
