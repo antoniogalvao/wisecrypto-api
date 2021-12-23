@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { CurrenciesModule } from './currencies/currencies.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CurrenciesModule } from './currencies/currencies.module';
     TypeOrmModule.forRoot(),
     UsersModule,
     CurrenciesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
