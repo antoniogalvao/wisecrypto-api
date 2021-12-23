@@ -1,5 +1,5 @@
+import { CredentialsDto } from './dto/credentials.dto';
 import { sign } from 'jsonwebtoken';
-import { SigninUserDto } from './../users/dto/signin-user.dto';
 import { instanceToPlain } from 'class-transformer';
 import { hash, compare } from 'bcryptjs';
 import { User } from './../users/entities/user.entity';
@@ -14,8 +14,8 @@ export class AuthService {
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
-  async signin(signinUserDto: SigninUserDto) {
-    const { email, password } = signinUserDto;
+  async signin(credentialsDto: CredentialsDto) {
+    const { email, password } = credentialsDto;
     const user = await this.usersRepository.findOne({ email });
 
     if (!user) {

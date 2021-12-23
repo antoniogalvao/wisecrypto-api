@@ -1,8 +1,10 @@
-import { CreateUserDto } from './../users/dto/create-user.dto';
-import { SigninUserDto } from './../users/dto/signin-user.dto';
-import { AuthService } from './auth.service';
 import { Controller, Body, Post } from '@nestjs/common';
+
+import { AuthService } from './auth.service';
 import { SendMailProducerService } from 'src/jobs/sendMail-producer.service';
+
+import { CredentialsDto } from './dto/credentials.dto';
+import { CreateUserDto } from './../users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -11,9 +13,9 @@ export class AuthController {
     private sendMailService: SendMailProducerService,
   ) {}
 
-  @Post('signin')
-  async signin(@Body() signinUserDto: SigninUserDto) {
-    const token = await this.authService.signin(signinUserDto);
+  @Post('session')
+  async signin(@Body() credentialsDto: CredentialsDto) {
+    const token = await this.authService.signin(credentialsDto);
     return { token: token };
   }
 
